@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { View, Text, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import dayjs from "dayjs";
 
 import { getSummary } from "../api/getSummary";
@@ -42,11 +42,11 @@ export function Home() {
     }
   }
 
-  useEffect(() => {
-    return () => {
+  useFocusEffect(
+    useCallback(() => {
       loadSummary();
-    };
-  }, []);
+    }, [])
+  );
 
   if (isLoading) {
     return <Loading />;
