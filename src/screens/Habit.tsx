@@ -78,6 +78,8 @@ export function Habit() {
           completedHabits,
         };
       });
+
+      setCompletedHabits(completedHabits);
     } catch (error: any) {
       Alert.alert("Ops", error.message);
     }
@@ -106,9 +108,7 @@ export function Habit() {
   }
 
   useEffect(() => {
-    return () => {
-      loadHabits();
-    };
+    loadHabits();
   }, []);
 
   if (isLoading) {
