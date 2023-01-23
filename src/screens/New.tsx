@@ -58,12 +58,12 @@ export function New() {
         weekDays
       });
 
-      Alert.alert("Novo hábito", "Hábito foi criado!");
-
       setTitle("");
       setWeekDays([]);
+
+      Alert.alert("Ops", "Hábito foi criado!");
     } catch (error: any) {
-      Alert.alert("Novo hábito", error.message);
+      Alert.alert("Ops", error.message);
     } finally {
       setIsCreating(false);
     }
