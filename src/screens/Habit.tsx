@@ -2,14 +2,18 @@ import { useEffect, useState } from "react";
 import { View, ScrollView, Text, Alert } from "react-native";
 import { useRoute } from "@react-navigation/native";
 
+import dayjs from "dayjs";
+import clsx from "clsx";
+
 import { BackButton } from "../components/BackButton";
 import { ProgressBar } from "../components/ProgressBar";
 import { CheckBox } from "../components/CheckBox";
 import { Loading } from "../components/Loading";
+import { HabitEmpty } from "../components/HabitEmpty";
 
-import dayjs from "dayjs";
 import { getDayHabits } from "../api/getDayHabits";
 import { patchToggleHabit } from "../api/patchToggleHabit";
+
 import { generateProgressPercentage } from "../utils/generate-progress-percentage";
 interface IHabitParams {
   date: string;
@@ -34,8 +38,10 @@ export function Habit() {
   const [completedHabits, setCompletedHabits] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const dayOfWeek = dayjs(date).format("dddd");
-  const dayAndMonth = dayjs(date).format("DD/MM");
+  const parsedDayJs = dayjs(date);
+  const dayOfWeek = parsedDayJs.format("dddd");
+  const dayAndMonth = parsedDayJs.format("DD/MM");
+  const isDateInPast = parsedDayJs.endOf("day").isBefore(new Date());
 
   const habitsProgress = dayInfo?.possibleHabits
     ? generateProgressPercentage(
@@ -127,8 +133,12 @@ export function Habit() {
 
         <ProgressBar progress={habitsProgress} />
 
-        <View className="mt-6">
-          {dayInfo &&
+        <View
+          className={clsx("mt-6", {
+            "opacity-50": isDateInPast,
+          })}
+        >
+          {dayInfo && dayInfo.possibleHabits.length > 0 ? (
             dayInfo.possibleHabits.map((habit) => {
               const isChecked = completedHabits.includes(habit.id);
 
@@ -137,11 +147,21 @@ export function Habit() {
                   key={habit.id}
                   title={habit.title}
                   checked={isChecked}
+                  disabled={isDateInPast}
                   onPress={() => handleToggleHabit(habit.id)}
                 />
               );
-            })}
+            })
+          ) : (
+            <HabitEmpty />
+          )}
         </View>
+
+        {isDateInPast && (
+          <Text className="text-white mt-10 text-center">
+            Você não pode editar hábitos de uma data passada.
+          </Text>
+        )}
       </ScrollView>
     </View>
   );
